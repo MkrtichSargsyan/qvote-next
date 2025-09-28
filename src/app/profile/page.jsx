@@ -1,14 +1,20 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 export default function ProfilePage() {
-    const votes = JSON.parse(localStorage.getItem("qvote-votes") || "[]");
+    const [votes, setVotes] = useState([]);
+
+    useEffect(() => {
+        const storedVotes = JSON.parse(localStorage.getItem("qvote-votes") || "[]");
+        setVotes(storedVotes);
+    }, []);
 
     return (
-        <div className="min-h-full px-6 py-20 max-w-6xl mx-auto flex flex-col items-center">
+        <div className="flex flex-col flex-1 min-h-full px-6 py-8 max-w-6xl mx-auto">
             <h1 className="text-3xl font-bold mb-10">Your Profile</h1>
-
             {votes.length === 0 ? (
-                <p>You haven't voted yet.</p>
+                <p>You haven’t voted yet.</p>
             ) : (
                 <ul className="w-full space-y-4">
                     {votes.map((v, idx) => (
