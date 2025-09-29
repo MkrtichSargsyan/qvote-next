@@ -40,11 +40,6 @@ export default function Navbar() {
                     <Link href="/profile" className="hover:text-white transition-colors">
                         Profile
                     </Link>
-                    {user && (
-                        <Link href="/create" className="hover:text-white transition-colors">
-                            Create
-                        </Link>
-                    )}
 
                     {/* Auth Buttons */}
                     {user ? (
