@@ -21,7 +21,7 @@ export default function TransactionsPage() {
     const fetchTransactions = async (wallet) => {
         try {
             const res = await fetch(
-                `https://api.etherscan.io/api?module=account&action=txlist&address=${wallet}&startblock=0&endblock=99999999&sort=desc&apikey=9U458IU4DC6V22JS71GQBVBVAWMW3QQ3XR`
+                `https://api.basescan.org/api?module=account&action=txlist&address=${wallet}&startblock=0&endblock=99999999&sort=desc&apikey=9U458IU4DC6V22JS71GQBVBVAWMW3QQ3XR`
             );
 
             const data = await res.json();
