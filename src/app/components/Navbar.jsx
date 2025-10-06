@@ -14,20 +14,60 @@ export default function Navbar() {
 
     const connectWallet = async () => {
         try {
-            if (!window.ethereum) {
-                alert("MetaMask not found. Please install MetaMask.");
+            if (typeof window.ethereum === "undefined") {
+                alert("No crypto wallet found. Please install MetaMask or Coinbase Wallet.");
                 return;
             }
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const accounts = await provider.send("eth_requestAccounts", []);
-            const wallet = accounts[0];
+
+            // If multiple providers exist (MetaMask, Coinbase, etc.)
+            const providers = window.ethereum.providers || [window.ethereum];
+            let selectedProvider;
+
+            if (providers.length > 1) {
+                const choice = prompt(
+                    providers
+                        .map(
+                            (p, i) =>
+                                `${i + 1}. ${p.isMetaMask
+                                    ? "MetaMask"
+                                    : p.isCoinbaseWallet
+                                        ? "Coinbase Wallet"
+                                        : "Other"
+                                }`
+                        )
+                        .join("\n") + "\n\nSelect wallet by number:"
+                );
+                selectedProvider = providers[parseInt(choice) - 1];
+                if (!selectedProvider) {
+                    alert("Invalid selection or wallet not found.");
+                    return;
+                }
+            } else {
+                selectedProvider = window.ethereum;
+            }
+
+            // Request wallet connection
+            await selectedProvider.request({ method: "eth_requestAccounts" });
+            const provider = new ethers.BrowserProvider(selectedProvider);
+            const signer = await provider.getSigner();
+            const wallet = await signer.getAddress();
+
+            // Check chain (Base Mainnet = 0x2105)
+            const network = await provider.getNetwork();
+            if (network.chainId !== 8453n) {
+                alert("Please switch to Base Mainnet (chainId 8453).");
+                return;
+            }
+
             setAccount(wallet);
             localStorage.setItem("qvote-wallet", wallet);
+
+            console.log("Connected:", wallet);
         } catch (err) {
             console.error("Wallet connection error:", err);
+            alert("Failed to connect wallet. Please try again.");
         }
     };
-
     const disconnectWallet = () => {
         localStorage.removeItem("qvote-wallet");
         setAccount(null);
